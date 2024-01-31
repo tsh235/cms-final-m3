@@ -1,9 +1,6 @@
 import {addProduct, changeProduct} from './serviceAPI.js';
 import elems from './const.js';
 import {getData} from './serviceAPI.js';
-import {errorModal} from './createElements.js';
-import {renderGoods} from './render.js';
-import {updateTotalPrice} from './helpers.js';
 
 const {
   API_URL,
@@ -13,7 +10,6 @@ const {
   modalVendorIdWrapper,
   modalForm,
   categoryList,
-  tableBody,
   fileImage,
   noImage,
 } = elems;
@@ -39,8 +35,17 @@ const toBase64 = file => new Promise((resolve, reject) => {
 });
 
 export const modalControl = (form, data = {}) => {
+  const closeModal = () => {
+    imageGoods.remove();
+    btnAddGoods.removeEventListener('click', () => {});
+    form.removeEventListener('click', () => {});
+    if (modalForm.querySelector('.error-modal')) {
+      modalForm.querySelector('.error-modal').remove();
+    }
+    overlay.classList.remove('active');
+  };
+
   const openModal = async (modalTitleText, id = 0) => {
-    console.log('id: ', id);
     const categories = await getData(`${API_URL}/api/categories`);
 
     categories.forEach(item => {
@@ -61,30 +66,18 @@ export const modalControl = (form, data = {}) => {
       console.log('data: ', data);
       data.image = await toBase64(data.image);
 
-      let response;
       if (+id === 0) {
-        response = await addProduct(data);
+        await addProduct(data);
       } else {
-        response = await changeProduct(data, id);
+        await changeProduct(data, id);
       }
 
-      if (response.ok) {
-        const newData = await getData(`${API_URL}/api/goods?page=2`);
-        const count = newData.length - 1;
-        renderGoods(tableBody, newData, count);
-        updateTotalPrice(newData);
-
-        form.total.textContent = `$ 0`;
-        form.reset();
-        imageGoods.remove();
-        overlay.classList.remove('active');
-      } else {
-        errorModal(response);
-      }
+      closeModal();
     });
   };
 
   if (Object.entries(data).length !== 0) {
+    console.log('Object.entries(data).length: ', Object.entries(data).length);
     const {
       id,
       title,
@@ -129,22 +122,11 @@ export const modalControl = (form, data = {}) => {
 
     modalVendorIdWrapper.innerHTML =
       `id: <span class="vendor-code__id">${id}</span>`;
-    btnAddGoods.removeEventListener('click', () => {});
     openModal('Изменить товар', id);
-  }
-
-  const closeModal = () => {
-    imageGoods.remove();
-    if (modalForm.querySelector('.error-modal')) {
-      modalForm.querySelector('.error-modal').remove();
-    }
-    overlay.classList.remove('active');
-  };
-
-  btnAddGoods.addEventListener('click', () => {
+  } else {
     modalVendorIdWrapper.textContent = '';
     openModal('Добавить товар');
-  });
+  }
 
   overlay.addEventListener('click', ({target}) => {
     if (target === overlay || target.closest('.modal__close')) {
@@ -213,3 +195,7 @@ export const formChange = (form) => {
     }
   });
 };
+
+btnAddGoods.addEventListener('click', () => {
+  modalControl(modalForm);
+});

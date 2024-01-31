@@ -1,7 +1,7 @@
 import './css/normalize.min.css';
 import './css/index.css';
 
-import {formChange, modalControl} from './script/control.js';
+import {formChange} from './script/control.js';
 import {renderGoods} from './script/render.js';
 import elems from './script/const.js';
 import {getData} from './script/serviceAPI.js';
@@ -24,7 +24,6 @@ const init = async () => {
 
   if (data) {
     renderGoods(tableBody, data);
-    modalControl(modalForm);
     formChange(modalForm);
     search();
   }

@@ -2,7 +2,8 @@ import {updateTotalPrice} from './helpers.js';
 import {renderGoods} from './render.js';
 
 import elems from './const.js';
-const {tableBody, API_URL} = elems;
+import {errorModal} from './createElements.js';
+const {tableBody, modalForm, API_URL} = elems;
 
 export const getData = (url, error) => fetch(url)
     .then(response => {
@@ -13,8 +14,8 @@ export const getData = (url, error) => fetch(url)
       return response.json();
     }).catch(error);
 
-export const addProduct = async (product) =>
-  await fetch(`${API_URL}/api/goods`, {
+export const addProduct = async (product) => {
+  const response = await fetch(`${API_URL}/api/goods`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -22,14 +23,40 @@ export const addProduct = async (product) =>
     body: JSON.stringify(product),
   });
 
-export const changeProduct = async (product, id) =>
-  await fetch(`${API_URL}/api/goods/${id}`, {
+  if (response.ok) {
+    const newData = await getData(`${API_URL}/api/goods?page=2`);
+    const count = newData.length - 1;
+    renderGoods(tableBody, newData, count);
+    updateTotalPrice(newData);
+
+    modalForm.total.textContent = `$ 0`;
+    modalForm.reset();
+  } else {
+    errorModal(response);
+  }
+};
+
+export const changeProduct = async (product, id) => {
+  const response = await fetch(`${API_URL}/api/goods/${id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(product),
   });
+
+  if (response.ok) {
+    const newData = await getData(`${API_URL}/api/goods?page=2`);
+    const count = newData.length - 1;
+    renderGoods(tableBody, newData, count);
+    updateTotalPrice(newData);
+
+    modalForm.total.textContent = `$ 0`;
+    modalForm.reset();
+  } else {
+    errorModal(response);
+  }
+};
 
 export const deleteProduct = async (row, id) => {
   const response = await fetch(`${API_URL}/api/goods/${id}`, {
