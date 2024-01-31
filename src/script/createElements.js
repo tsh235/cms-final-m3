@@ -1,6 +1,6 @@
 import elems from './const.js';
 import {modalControl} from './control.js';
-import {deleteRow} from './handlers.js';
+import {deleteProduct} from './serviceAPI.js';
 import {confirmDelete} from './helpers.js';
 import {getData} from './serviceAPI.js';
 
@@ -45,6 +45,23 @@ export const createRow = (
     imgBtn.classList.add('table__btn_nopic');
     imgBtn.title = 'Картинка отсутствует';
   }
+
+  imgBtn.addEventListener('click', () => {
+    const imageUrl = imgBtn.dataset.pic;
+    const windowWidth = 800;
+    const windowHeight = 600;
+    const windowFeatures = `width=${windowWidth}, height=${windowHeight}`;
+
+    const newWindow = window.open('about:blank', '', windowFeatures);
+    newWindow.moveTo(screen.width / 2 - windowWidth / 2,
+        screen.height / 2 - windowHeight / 2);
+
+    newWindow.focus();
+
+    newWindow.document.write(`
+      <img src="${API_URL}/${imageUrl}" alt="Изображение"/>
+    `);
+  });
 
   const btnEdit = tr.querySelector('.table__btn_edit');
   const btnDelete = tr.querySelector('.table__btn_del');
@@ -111,7 +128,7 @@ export const deleteModal = (row, id) => {
 
   confirmBtn.addEventListener('click', () => {
     deleteModalOverlay.remove();
-    deleteRow(row, id);
+    deleteProduct(row, id);
   });
 
   const cancelBtn = document.createElement('button');
@@ -183,7 +200,7 @@ export const errorModal = err => {
   const modalText = document.createElement('p');
 
   if (err.status >= 400 && err.status <= 499 || err.status >= 500) {
-    modalText.textContent = `Ошибка сохранения данных. Попробуйте позже.`;
+    modalText.textContent = `Ошибка сохранения данных. Попробуйде позже.`;
   } else {
     modalText.textContent = 'Что-то пошло не так';
   }

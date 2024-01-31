@@ -1,4 +1,4 @@
-import {addProduct} from './handlers.js';
+import {addProduct, changeProduct} from './serviceAPI.js';
 import elems from './const.js';
 import {getData} from './serviceAPI.js';
 import {errorModal} from './createElements.js';
@@ -38,34 +38,9 @@ const toBase64 = file => new Promise((resolve, reject) => {
   reader.readAsDataURL(file);
 });
 
-const formControl = async (form, tableBody, id) => {
-  form.addEventListener('submit', async e => {
-    e.preventDefault();
-
-    const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData);
-    data.image = await toBase64(data.image);
-
-    const response = await addProduct(data, id);
-
-    if (response.ok) {
-      const newData = await getData(`${API_URL}/api/goods?page=2`);
-      const count = newData.length - 1;
-      renderGoods(tableBody, newData, count);
-      updateTotalPrice(newData);
-
-      form.total.textContent = `$ 0`;
-      form.reset();
-      imageGoods.remove();
-      overlay.classList.remove('active');
-    } else {
-      errorModal(response);
-    }
-  });
-};
-
 export const modalControl = (form, data = {}) => {
-  const openModal = async (modalTitleText, id = '') => {
+  const openModal = async (modalTitleText, id = 0) => {
+    console.log('id: ', id);
     const categories = await getData(`${API_URL}/api/categories`);
 
     categories.forEach(item => {
@@ -78,8 +53,35 @@ export const modalControl = (form, data = {}) => {
     modalTitle.textContent = modalTitleText;
     modalSubmit.textContent = modalTitleText;
 
-    formControl(modalForm, tableBody, id);
-    btnAddGoods.removeEventListener('click', () => {});
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData);
+      console.log('data: ', data);
+      data.image = await toBase64(data.image);
+
+      let response;
+      if (+id === 0) {
+        response = await addProduct(data);
+      } else {
+        response = await changeProduct(data, id);
+      }
+
+      if (response.ok) {
+        const newData = await getData(`${API_URL}/api/goods?page=2`);
+        const count = newData.length - 1;
+        renderGoods(tableBody, newData, count);
+        updateTotalPrice(newData);
+
+        form.total.textContent = `$ 0`;
+        form.reset();
+        imageGoods.remove();
+        overlay.classList.remove('active');
+      } else {
+        errorModal(response);
+      }
+    });
   };
 
   if (Object.entries(data).length !== 0) {
@@ -127,12 +129,15 @@ export const modalControl = (form, data = {}) => {
 
     modalVendorIdWrapper.innerHTML =
       `id: <span class="vendor-code__id">${id}</span>`;
+    btnAddGoods.removeEventListener('click', () => {});
     openModal('Изменить товар', id);
   }
 
   const closeModal = () => {
     imageGoods.remove();
-    modalForm.querySelector('.error-modal').remove();
+    if (modalForm.querySelector('.error-modal')) {
+      modalForm.querySelector('.error-modal').remove();
+    }
     overlay.classList.remove('active');
   };
 
