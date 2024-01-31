@@ -183,7 +183,7 @@ export const errorModal = err => {
   const modalText = document.createElement('p');
 
   if (err.status >= 400 && err.status <= 499 || err.status >= 500) {
-    modalText.textContent = `Ошибка: ${err.statusText}`;
+    modalText.textContent = `Ошибка сохранения данных. Попробуйте позже.`;
   } else {
     modalText.textContent = 'Что-то пошло не так';
   }
