@@ -45,7 +45,8 @@ export const modalControl = (data = {}) => {
     overlay.classList.remove('active');
   };
 
-  const openModal = async (modalTitleText, id = 0) => {
+  const openModal = async (modalTitleText, productId = 0) => {
+    console.log('productId: ', +productId);
     const categories = await getData(`${API_URL}/api/categories`);
 
     categories.forEach(item => {
@@ -65,12 +66,10 @@ export const modalControl = (data = {}) => {
       const data = Object.fromEntries(formData);
       data.image = await toBase64(data.image);
 
-      if (+id === 0) {
-        console.log('id: ', id);
+      if (+productId === 0) {
         await addProduct(data);
       } else {
-        console.log('id: ', id);
-        await changeProduct(data, id);
+        await changeProduct(data, productId);
       }
 
       closeModal();
@@ -124,7 +123,6 @@ export const modalControl = (data = {}) => {
       `id: <span class="vendor-code__id">${id}</span>`;
     openModal('Изменить товар', id);
   } else {
-    console.log(Object.entries(data).length);
     modalVendorIdWrapper.textContent = '';
     openModal('Добавить товар');
   }
@@ -198,5 +196,6 @@ export const formChange = (form) => {
 };
 
 btnAddGoods.addEventListener('click', () => {
+  modalForm.total.textContent = `$ 0`;
   modalControl();
 });

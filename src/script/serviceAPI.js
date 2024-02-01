@@ -45,8 +45,7 @@ export const changeProduct = async (product, id) => {
 
   if (response.ok) {
     const newData = await getData(`${API_URL}/api/goods?page=2`);
-    const count = newData.length - 1;
-    renderGoods(tableBody, newData, count);
+    renderGoods(tableBody, newData);
 
     modalForm.total.textContent = `$ 0`;
     modalForm.reset();
