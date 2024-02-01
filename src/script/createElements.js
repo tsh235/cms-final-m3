@@ -11,10 +11,12 @@ const {
 } = elems;
 
 export const createRow = (
-    {id, count, title, category, units, price, image},
+    {id, count, title, category, units, price, image, discount},
     rowCount,
 ) => {
   rowCount += 1;
+
+  discount === 0 ? price : price -= Math.round(price * (discount / 100));
 
   const tr = document.createElement('tr');
   tr.classList.add('table__body-row');
@@ -68,7 +70,7 @@ export const createRow = (
 
   btnEdit.addEventListener('click', async () => {
     const data = await getData(`${API_URL}/api/goods/${id}`);
-    modalControl(modalForm, data);
+    modalControl(data);
   });
 
   btnDelete.addEventListener('click', () => {

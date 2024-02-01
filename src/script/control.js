@@ -34,11 +34,11 @@ const toBase64 = file => new Promise((resolve, reject) => {
   reader.readAsDataURL(file);
 });
 
-export const modalControl = (form, data = {}) => {
+export const modalControl = (data = {}) => {
   const closeModal = () => {
     imageGoods.remove();
     btnAddGoods.removeEventListener('click', () => {});
-    form.removeEventListener('click', () => {});
+    modalForm.removeEventListener('click', () => {});
     if (modalForm.querySelector('.error-modal')) {
       modalForm.querySelector('.error-modal').remove();
     }
@@ -58,17 +58,18 @@ export const modalControl = (form, data = {}) => {
     modalTitle.textContent = modalTitleText;
     modalSubmit.textContent = modalTitleText;
 
-    form.addEventListener('submit', async e => {
+    modalForm.addEventListener('submit', async e => {
       e.preventDefault();
 
       const formData = new FormData(e.target);
       const data = Object.fromEntries(formData);
-      console.log('data: ', data);
       data.image = await toBase64(data.image);
 
       if (+id === 0) {
+        console.log('id: ', id);
         await addProduct(data);
       } else {
+        console.log('id: ', id);
         await changeProduct(data, id);
       }
 
@@ -77,7 +78,6 @@ export const modalControl = (form, data = {}) => {
   };
 
   if (Object.entries(data).length !== 0) {
-    console.log('Object.entries(data).length: ', Object.entries(data).length);
     const {
       id,
       title,
@@ -89,22 +89,22 @@ export const modalControl = (form, data = {}) => {
       units,
       discount,
     } = data;
-    form.title.value = title;
-    form.category.value = category;
-    form.description.value = description;
-    form.units.value = units;
-    form.count.value = +count;
-    form.price.value = +price;
-    form.total.value = `$${count * price}`;
+    modalForm.title.value = title;
+    modalForm.category.value = category;
+    modalForm.description.value = description;
+    modalForm.units.value = units;
+    modalForm.count.value = +count;
+    modalForm.price.value = +price;
+    modalForm.total.value = `$${count * price}`;
 
     if (discount !== 0) {
-      form.discount.value = discount;
-      form.discount_check.checked = true;
-      form.discount.disabled = false;
+      modalForm.discount.value = discount;
+      modalForm.discount_check.checked = true;
+      modalForm.discount.disabled = false;
     } else {
-      form.discount.value = '';
-      form.discount_check.checked = false;
-      form.discount.disabled = true;
+      modalForm.discount.value = '';
+      modalForm.discount_check.checked = false;
+      modalForm.discount.disabled = true;
     }
 
     if (image !== noImage) {
@@ -124,6 +124,7 @@ export const modalControl = (form, data = {}) => {
       `id: <span class="vendor-code__id">${id}</span>`;
     openModal('Изменить товар', id);
   } else {
+    console.log(Object.entries(data).length);
     modalVendorIdWrapper.textContent = '';
     openModal('Добавить товар');
   }
@@ -131,8 +132,8 @@ export const modalControl = (form, data = {}) => {
   overlay.addEventListener('click', ({target}) => {
     if (target === overlay || target.closest('.modal__close')) {
       closeModal();
-      form.total.textContent = `$ 0`;
-      form.reset();
+      modalForm.total.textContent = `$ 0`;
+      modalForm.reset();
     }
   });
 };
@@ -197,5 +198,5 @@ export const formChange = (form) => {
 };
 
 btnAddGoods.addEventListener('click', () => {
-  modalControl(modalForm);
+  modalControl();
 });

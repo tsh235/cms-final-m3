@@ -1,4 +1,3 @@
-import {updateTotalPrice} from './helpers.js';
 import {renderGoods} from './render.js';
 
 import elems from './const.js';
@@ -27,7 +26,6 @@ export const addProduct = async (product) => {
     const newData = await getData(`${API_URL}/api/goods?page=2`);
     const count = newData.length - 1;
     renderGoods(tableBody, newData, count);
-    updateTotalPrice(newData);
 
     modalForm.total.textContent = `$ 0`;
     modalForm.reset();
@@ -49,7 +47,6 @@ export const changeProduct = async (product, id) => {
     const newData = await getData(`${API_URL}/api/goods?page=2`);
     const count = newData.length - 1;
     renderGoods(tableBody, newData, count);
-    updateTotalPrice(newData);
 
     modalForm.total.textContent = `$ 0`;
     modalForm.reset();
@@ -70,7 +67,6 @@ export const deleteProduct = async (row, id) => {
     row.remove();
     const data = await getData(`${API_URL}/api/goods?page=2`);
     renderGoods(tableBody, data);
-    updateTotalPrice(data);
   } else {
     console.error(response.statusText);
   }

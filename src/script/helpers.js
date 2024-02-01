@@ -1,9 +1,4 @@
-import elems from './const.js';
 import {deleteModal} from './createElements.js';
-
-const {
-  cmsTotalPrice,
-} = elems;
 
 export const counter = (rows) => {
   let counter = 1;
@@ -13,26 +8,6 @@ export const counter = (rows) => {
     row.querySelector('.number').textContent = counter;
     counter++;
   });
-};
-
-export const updateCounter = (list, index) => {
-  const rows = Array.from(list.querySelectorAll('tr'));
-
-  rows.forEach((row, i) => {
-    if (i >= index) {
-      row.dataset.index -= 1;
-      row.querySelector('.number').textContent = row.dataset.index;
-    }
-  });
-};
-
-export const updateTotalPrice = async ({goods}) => {
-  let totalPrice = 0;
-  goods.forEach(obj => {
-    totalPrice += obj.count * obj.price;
-  });
-
-  cmsTotalPrice.textContent = `$ ${totalPrice}`;
 };
 
 export const debounce = (callback, delay) => {

@@ -1,4 +1,4 @@
-const API_URL = 'https://six-quilled-nautilus.glitch.me';
+const API_URL = 'https://horn-succulent-tin.glitch.me/';
 const overlay = document.querySelector('.overlay');
 const modalTitle = overlay.querySelector('.modal__title');
 const modalVendorIdWrapper = overlay.querySelector('.vendor-code__wrapper');
