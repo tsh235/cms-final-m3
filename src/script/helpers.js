@@ -1,14 +1,10 @@
 import {deleteModal} from './createElements.js';
+import elems from './const.js';
 
-export const counter = (rows) => {
-  let counter = 1;
-
-  rows.forEach(row => {
-    row.dataset.index = counter;
-    row.querySelector('.number').textContent = counter;
-    counter++;
-  });
-};
+const {
+  modalSubmit,
+  modalLabelFile,
+} = elems;
 
 export const debounce = (callback, delay) => {
   let timeout;
@@ -28,4 +24,22 @@ export const showError = () => {
 
 export const confirmDelete = (row, id) => {
   deleteModal(row, id);
+};
+
+export const disableForm = (form) => {
+  const elements = form.elements;
+  for (let i = 0; i < elements.length; i++) {
+    elements[i].disabled = true;
+  }
+  modalSubmit.style.pointerEvents = 'none';
+  modalLabelFile.style.pointerEvents = 'none';
+};
+
+export const enableForm = (form) => {
+  const elements = form.elements;
+  for (let i = 0; i < elements.length; i++) {
+    elements[i].disabled = false;
+  }
+  modalSubmit.style.pointerEvents = '';
+  modalLabelFile.style.pointerEvents = '';
 };

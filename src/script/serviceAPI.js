@@ -2,7 +2,8 @@ import {renderGoods} from './render.js';
 
 import elems from './const.js';
 import {errorModal} from './createElements.js';
-const {tableBody, modalForm, API_URL} = elems;
+import {closeModal} from './control.js';
+const {tableBody, API_URL} = elems;
 
 export const getData = (url, error) => fetch(url)
     .then(response => {
@@ -21,14 +22,13 @@ export const addProduct = async (product) => {
     },
     body: JSON.stringify(product),
   });
+  console.log(response.ok);
 
   if (response.ok) {
     const newData = await getData(`${API_URL}/api/goods?page=2`);
     const count = newData.length - 1;
     renderGoods(tableBody, newData, count);
-
-    modalForm.total.textContent = `$ 0`;
-    modalForm.reset();
+    closeModal();
   } else {
     errorModal(response);
   }
@@ -46,9 +46,7 @@ export const changeProduct = async (product, id) => {
   if (response.ok) {
     const newData = await getData(`${API_URL}/api/goods?page=2`);
     renderGoods(tableBody, newData);
-
-    modalForm.total.textContent = `$ 0`;
-    modalForm.reset();
+    closeModal();
   } else {
     errorModal(response);
   }

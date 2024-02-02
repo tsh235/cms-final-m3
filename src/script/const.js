@@ -3,6 +3,8 @@ const overlay = document.querySelector('.overlay');
 const modalTitle = overlay.querySelector('.modal__title');
 const modalVendorIdWrapper = overlay.querySelector('.vendor-code__wrapper');
 const modalForm = overlay.querySelector('.modal__form');
+const modalSubmit = modalForm.querySelector('.modal__submit');
+const modalLabelFile = modalForm.querySelector('.modal__label_file');
 const categoryList = modalForm.querySelector('#category-list');
 const fileImage = modalForm.querySelector('#image');
 const btnAddGoods = document.querySelector('.panel__add-goods');
@@ -17,6 +19,8 @@ export default {
   modalTitle,
   modalVendorIdWrapper,
   modalForm,
+  modalSubmit,
+  modalLabelFile,
   categoryList,
   btnAddGoods,
   tableBody,

@@ -1,8 +1,8 @@
 import elems from './const.js';
-import {modalControl} from './control.js';
 import {deleteProduct} from './serviceAPI.js';
-import {confirmDelete} from './helpers.js';
+import {confirmDelete, disableForm, enableForm} from './helpers.js';
 import {getData} from './serviceAPI.js';
+import {openModal} from './control.js';
 
 const {
   API_URL,
@@ -70,7 +70,7 @@ export const createRow = (
 
   btnEdit.addEventListener('click', async () => {
     const data = await getData(`${API_URL}/api/goods/${id}`);
-    modalControl(data);
+    openModal(data);
   });
 
   btnDelete.addEventListener('click', () => {
@@ -153,8 +153,9 @@ export const deleteModal = (row, id) => {
 };
 
 export const errorModal = err => {
+  disableForm(modalForm);
+
   const modal = document.createElement('div');
-  modal.classList.add('error-modal');
   modal.style.cssText = `
     position: absolute;
     left: 50%;
@@ -168,13 +169,26 @@ export const errorModal = err => {
     box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.25);
   `;
 
-  modal.innerHTML = `
-    <button class="modal__close">
-      <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="m2 2 20 20M2 22 22 2" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
-      </svg>
-    </button>
+  const closeBtn = document.createElement('button');
+  closeBtn.style.cssText = `
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    background-color: transparent;
+    border: none;
+    color: #6E6893;
   `;
+
+  closeBtn.innerHTML = `
+    <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="m2 2 20 20M2 22 22 2" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+    </svg>
+  `;
+
+  closeBtn.addEventListener('click', () => {
+    modal.remove();
+    enableForm(modalForm);
+  });
 
   const modalContent = document.createElement('div');
   modalContent.style.cssText = `
@@ -202,12 +216,12 @@ export const errorModal = err => {
   const modalText = document.createElement('p');
 
   if (err.status >= 400 && err.status <= 499 || err.status >= 500) {
-    modalText.textContent = `Ошибка сохранения данных. Попробуйде позже.`;
+    modalText.textContent = `Ошибка сохранения данных. Попробуйте позже.`;
   } else {
     modalText.textContent = 'Что-то пошло не так';
   }
 
   modalContent.insertAdjacentElement('beforeend', modalText);
-  modal.append(modalContent);
+  modal.append(modalContent, closeBtn);
   modalForm.insertAdjacentElement('beforeend', modal);
 };
